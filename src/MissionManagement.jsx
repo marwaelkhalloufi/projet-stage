@@ -1,6 +1,5 @@
-"use client"
-
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const navigationItems = [
   { id: "saisie", label: "SAISIE" },
@@ -506,15 +505,13 @@ export default function MissionManagement() {
             >
               MISSION
             </button>
+            <Link to='/missions'>
+            </Link>
             <button
-              onClick={() => setActiveTab("index")}
-              className={`px-8 py-4 font-medium border-b-2 transition-colors ${
-                activeTab === "index"
-                  ? "border-blue-500 text-blue-600 bg-blue-50"
-                  : "border-transparent text-gray-600 hover:text-gray-800"
-              }`}
+            
+              className={`px-8 py-4 font-medium border-b-2 transition-colors `}
             >
-              INDEX
+              Dashboard
             </button>
           </div>
         </div>

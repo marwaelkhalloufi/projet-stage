@@ -9,8 +9,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Collaborateurs from './Dashboard/Collaborateurs';
 import Direction from './Dashboard/Direction';
 import TraitementDesFrais from './Dashboard/TraitementDesFrais';
-import Statistique from './Dashboard/statistique';
-
+import Statistique from './Dashboard/Statistique';
+ 
 function App() {
   return (
     <Router>
@@ -30,8 +30,11 @@ function App() {
               <Route path="direction" element={<Direction />} />
               <Route path="traitementDesFrais" element={<TraitementDesFrais />} />
               <Route path="statistique" element={<Statistique />} />
-              <Route path="missions" element={<MissionManagement />} />
             </Route>
+                
+           <Route path="missions" element={<MissionManagement />} />
+
+
           </Route>
         </Routes>
       </AuthProvider>

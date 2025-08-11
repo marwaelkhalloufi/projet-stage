@@ -15,7 +15,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard/missions" replace />;
   }
 
   const handleChange = (e) => {

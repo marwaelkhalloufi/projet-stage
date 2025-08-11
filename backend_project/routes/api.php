@@ -35,12 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    // Mission Management
-    Route::get('/missions', [MissionController::class, 'index']);
-    Route::post('/missions', [MissionController::class, 'store']);
-    Route::put('/missions/{id}', [MissionController::class, 'update']);
-    Route::put('/missions/{id}/validate', [MissionController::class, 'validate']);
-    Route::put('/missions/{id}/assign', [MissionController::class, 'assign']);
+    
+    Route::apiResource('missions', MissionController::class);
+
 
     // Agent can only view/update their own missions
     Route::get('/missions/my-missions', [MissionController::class, 'myMissions']);

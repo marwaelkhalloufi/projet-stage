@@ -1,9 +1,9 @@
-import { Users, BarChart3, MapPin, CreditCard, TrendingUp } from "lucide-react";
+import { Users, BarChart3, MapPin, CreditCard, TrendingUp, LogOut } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); // <-- Added logout here
   const location = useLocation();
 
   const menuItems = [
@@ -27,7 +27,8 @@ export default function Sidebar() {
 
         <div className="mt-4 space-y-1">
           {menuItems.map(({ id, label, icon: Icon, to }) => {
-            const isActive = location.pathname === to || location.pathname.startsWith(to + "/");
+            const isActive =
+              location.pathname === to || location.pathname.startsWith(to + "/");
             return (
               <NavLink
                 key={id}
@@ -48,7 +49,7 @@ export default function Sidebar() {
 
       {user && (
         <div className="mt-auto p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 mb-3">
             <div className="flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
                 {user.prenom?.charAt(0)}
@@ -64,6 +65,15 @@ export default function Sidebar() {
               </p>
             </div>
           </div>
+
+          {/* Logout button */}
+          <button
+            onClick={logout}
+            className="cursor-pointer flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Déconnexion
+          </button>
         </div>
       )}
     </div>

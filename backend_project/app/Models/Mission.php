@@ -21,4 +21,14 @@ class Mission extends Model
         'statut',
         'anomalie',
     ];
+
+    public function agent()
+{
+    return $this->belongsTo(User::class, 'agent_id');
+}
+
+public function vehicule()
+{
+    return $this->belongsTo(Vehicule::class, 'vehicule_id');
+}
 }

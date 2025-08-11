@@ -1,15 +1,18 @@
-import { Users, BarChart3, MapPin, CreditCard, TrendingUp } from "lucide-react"
-import { useAuth } from "../contexts/AuthContext" // Adjust path as needed
+import { Users, BarChart3, MapPin, CreditCard, TrendingUp } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { NavLink, useLocation } from "react-router-dom";
 
-export default function Sidebar({ currentPage, onNavigate }) {
-  const { user } = useAuth()
+export default function Sidebar() {
+  const { user } = useAuth();
+  const location = useLocation();
+
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "collaborateurs", label: "Collaborateurs", icon: Users },
-    { id: "direction", label: "Direction", icon: MapPin },
-    { id: "frais", label: "Frais", icon: CreditCard },
-    { id: "statistique", label: "Statistique", icon: TrendingUp },
-  ]
+    { id: "dashboard", label: "Dashboard", icon: BarChart3, to: "/dashboard" },
+    { id: "collaborateurs", label: "Collaborateurs", icon: Users, to: "/dashboard/collaborateurs" },
+    { id: "direction", label: "Direction", icon: MapPin, to: "/dashboard/direction" },
+    { id: "frais", label: "Frais", icon: CreditCard, to: "/dashboard/traitementDesFrais" },
+    { id: "statistique", label: "Statistique", icon: TrendingUp, to: "/dashboard/statistique" },
+  ];
 
   return (
     <div className="flex flex-col h-screen w-64 bg-white shadow-sm">
@@ -23,36 +26,33 @@ export default function Sidebar({ currentPage, onNavigate }) {
         </div>
 
         <div className="mt-4 space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            const isActive = currentPage === item.id
-
+          {menuItems.map(({ id, label, icon: Icon, to }) => {
+            const isActive = location.pathname === to || location.pathname.startsWith(to + "/");
             return (
-              <div
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`flex items-center px-6 py-3 cursor-pointer transition-colors ${
+              <NavLink
+                key={id}
+                to={to}
+                className={`flex items-center px-6 py-3 transition-colors ${
                   isActive
                     ? "text-blue-600 bg-blue-50 border-r-2 border-blue-600"
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Icon className="w-5 h-5 mr-3" />
-                <span className={isActive ? "font-medium" : ""}>{item.label}</span>
-              </div>
-            )
+                <span className={isActive ? "font-medium" : ""}>{label}</span>
+              </NavLink>
+            );
           })}
         </div>
       </nav>
 
-      {/* User profile section pinned at bottom */}
       {user && (
         <div className="mt-auto p-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                {/* User initials */}
-                {user.prenom?.charAt(0)}{user.nom?.charAt(0)}
+                {user.prenom?.charAt(0)}
+                {user.nom?.charAt(0)}
               </div>
             </div>
             <div className="min-w-0 flex-1">
@@ -67,5 +67,5 @@ export default function Sidebar({ currentPage, onNavigate }) {
         </div>
       )}
     </div>
-  )
+  );
 }

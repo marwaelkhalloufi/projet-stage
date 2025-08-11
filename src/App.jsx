@@ -6,27 +6,32 @@ import ProtectedRoute from './Componnent/ProtectedRoute';
 import Dashboard from './Dashboard/Dashboard';
 import MissionManagement from './MissionManagement';
 import { AuthProvider } from './contexts/AuthContext';
- 
+import Collaborateurs from './Dashboard/Collaborateurs';
+import Direction from './Dashboard/Direction';
+import TraitementDesFrais from './Dashboard/TraitementDesFrais';
+import Statistique from './Dashboard/statistique';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          {/* Public Routes */}
-           <Route index  element={<Login />} />
-          <Route path="/" element={<Layout />}>
-            <Route path="register" element={<CreationForm />} />
-            
-            {/* Protected Routes */}
-            <Route path="dashboard" element={<ProtectedRoute />}>
+          {/* Public routes */}
+          <Route index element={<Login />} />
+          <Route path="register" element={<CreationForm />} />
+
+          {/* Protected dashboard routes */}
+          <Route path="dashboard" element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              {/* Dashboard main page */}
               <Route index element={<Dashboard />} />
+              {/* Other dashboard pages */}
+              <Route path="collaborateurs" element={<Collaborateurs />} />
+              <Route path="direction" element={<Direction />} />
+              <Route path="traitementDesFrais" element={<TraitementDesFrais />} />
+              <Route path="statistique" element={<Statistique />} />
               <Route path="missions" element={<MissionManagement />} />
-             
             </Route>
-            
-         
-       
           </Route>
         </Routes>
       </AuthProvider>

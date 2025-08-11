@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('frais_mission', function (Blueprint $table) {
-            $table->string('id', 24)->primary();
-            $table->string('mission_id', 24);
+            $table->id();
+            $table->string('mission_id', 24)->nullable();
             $table->string('direction', 100)->nullable();
-            $table->char('mois', 2)->nullable();
+            $table->string('mois', 20)->nullable();
             $table->char('annee', 4)->nullable();
             $table->decimal('carburant', 10, 2)->nullable();
             $table->decimal('indemnité', 10, 2)->nullable();

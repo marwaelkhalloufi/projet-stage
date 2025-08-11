@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +15,7 @@ class DatabaseSeeder extends Seeder
             'nom' => 'Admin',
             'prenom' => 'User',
             'email' => 'admin@smarttrack.com',
-            'mot_de_passe' => Hash::make('password123'),
+            'mot_de_passe' => 'password123',
             'role' => 'admin',
             'fonction' => 'Administrator',
             'college' => 'A'
@@ -28,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'nom' => 'Agent',
             'prenom' => 'Test',
             'email' => 'agent@smarttrack.com',
-            'mot_de_passe' => Hash::make('password123'),
+            'mot_de_passe' => 'password123',
             'role' => 'agent',
             'fonction' => 'Field Agent',
             'college' => 'B'

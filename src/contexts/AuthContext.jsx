@@ -1,5 +1,4 @@
-// 1. Create Authentication Context (src/contexts/AuthContext.js)
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import  { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/authAPI';
 
 const AuthContext = createContext({});
@@ -9,8 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('auth_token'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Check if user is authenticated on app load
+ 
   useEffect(() => {
     const checkAuth = async () => {
       const savedToken = localStorage.getItem('auth_token');

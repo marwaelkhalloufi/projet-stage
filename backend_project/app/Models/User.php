@@ -2,64 +2,86 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasRoles;
+    use HasApiTokens, Notifiable, HasRoles, HasFactory;
 
     protected $table = 'users';
     public $timestamps = false;
+    protected $guard_name = 'sanctum';
 
     protected $fillable = [
-        'id',
         'matricule',
         'nom',
         'prenom',
         'email',
         'mot_de_passe',
-        'role', 
+        'role',
         'fonction',
-        'college',
+        'college'
     ];
 
     protected $hidden = [
-        'mot_de_passe',
-    ];
+    'mot_de_passe', // Hide password in responses
+    'remember_token',
+];
 
     protected $appends = ['permissions', 'role_names'];
 
-    // Override the password attribute name
     public function getAuthPassword()
     {
         return $this->mot_de_passe;
     }
 
-    // Mutator to hash password
     public function setMotDePasseAttribute($value)
     {
-        $this->attributes['mot_de_passe'] = Hash::make($value);
+        if ($value) {
+            $this->attributes['mot_de_passe'] = Hash::make($value);
+        }
     }
 
-    // Get user permissions for API responses
     public function getPermissionsAttribute()
     {
-        return $this->getAllPermissions()->pluck('name')->toArray();
+        try {
+            return $this->getAllPermissions()->pluck('name')->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
-    // Get role names for API responses
     public function getRoleNamesAttribute()
     {
-        return $this->getRoleNames()->toArray();
+        try {
+            return $this->getRoleNames()->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
-    // Relationship with Agent
     public function agent()
     {
         return $this->hasOne(Agent::class, 'id', 'id');
+    }
+
+    // Helper method for API responses
+    public function toAuthArray()
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'matricule' => $this->matricule,
+            'nom' => $this->nom,
+            'prenom' =>$this->prenom,
+            'roles' => $this->role,
+            'permissions' => $this->permissions,
+            'agent' => $this->agent,
+        ];
     }
 }

@@ -1,62 +1,78 @@
 const API_BASE_URL = 'http://localhost:8000/api';
 
 class AuthAPI {
+  
   constructor() {
     this.baseURL = API_BASE_URL;
+    this.authToken = null;
   }
 
-  // Helper method to get headers
+  setAuthToken(token) {
+    this.authToken = token;
+  }
+
+  clearAuthToken() {
+    this.authToken = null;
+  }
+
   getHeaders(includeAuth = true) {
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
 
-    if (includeAuth) {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
+    if (includeAuth && this.authToken) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
     }
 
     return headers;
   }
 
+    
   // Helper method for API calls
   async makeRequest(url, options = {}) {
     try {
-      const response = await fetch(`${this.baseURL}${url}`, {
+      const fullUrl = `${this.baseURL}${url}`;
+      console.log('Making request to:', fullUrl); // Debug log
+      
+      const response = await fetch(fullUrl, {
         ...options,
         headers: {
-          ...this.getHeaders(!options.skipAuth),
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` }),
           ...options.headers,
         },
+        credentials: 'include' // Important for cookies/sessions
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
     }
   }
 
+
   // Auth endpoints
-  async login(email, password) {
+ async login(email, password) {
     return this.makeRequest('/auth/login', {
-      method: 'POST',
-      skipAuth: true,
-      body: JSON.stringify({
-        email,
-        mot_de_passe: password,
-      }),
+        method: 'POST',
+        skipAuth: true,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            email: email,
+            mot_de_passe: password
+        }),
     });
-  }
+}
 
   async register(userData) {
     return this.makeRequest('/auth/register', {

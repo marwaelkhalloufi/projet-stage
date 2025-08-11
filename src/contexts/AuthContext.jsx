@@ -1,4 +1,4 @@
-import  { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authAPI } from '../services/authAPI';
 
 const AuthContext = createContext({});
@@ -8,66 +8,98 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('auth_token'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Initialize authentication state
+const fetchUserProfile = useCallback(async () => {
+    try {
+      const response = await authAPI.getProfile();
+      if (response.success) {
+        setUser(response.data);
+        setIsAuthenticated(true);
+      } else {
+        handleLogout();
+      }
+    } catch (error) {
+      handleLogout();
+    }
+  }, []);
+
+  // Initialize authentication state
   useEffect(() => {
-    const checkAuth = async () => {
+    const initializeAuth = async () => {
       const savedToken = localStorage.getItem('auth_token');
       if (savedToken) {
         try {
-          setToken(savedToken);
-          const userProfile = await authAPI.getProfile();
-          setUser(userProfile.data);
+          console.log('Checking authentication with token:', savedToken);
+          authAPI.setAuthToken(savedToken); // Set token in API client
+          await fetchUserProfile();
         } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('auth_token');
-          setToken(null);
+          console.error('Auth initialization failed:', error);
+          handleLogout();
         }
       }
       setLoading(false);
     };
 
-    checkAuth();
-  }, []);
+    initializeAuth();
+  }, [fetchUserProfile]);
 
-  // Login function
+  const handleLoginSuccess = (userData, authToken) => {
+    localStorage.setItem('auth_token', authToken);
+    authAPI.setAuthToken(authToken);
+    setUser(userData);
+    setToken(authToken);
+    setIsAuthenticated(true);
+    setError(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    authAPI.clearAuthToken();
+    setUser(null);
+    setToken(null);
+    setIsAuthenticated(false);
+  };
+
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
     try {
       const response = await authAPI.login(email, password);
-      const { user: userData, access_token } = response.data;
-      
-      setUser(userData);
-      setToken(access_token);
-      localStorage.setItem('auth_token', access_token);
-      
-      return { success: true, data: response.data };
+      if (response.success && response.data) {
+        handleLoginSuccess(response.data.user, response.data.token);
+        return { success: true };
+      }
+      throw new Error(response.message || 'Login failed');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+      setError(error.message);
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }
   };
+
 
   // Register function
   const register = async (userData) => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Attempting registration with:', userData);
       const response = await authAPI.register(userData);
-      const { user: newUser, access_token } = response.data;
-      
-      setUser(newUser);
-      setToken(access_token);
-      localStorage.setItem('auth_token', access_token);
-      
-      return { success: true, data: response.data };
+      console.log('Registration response:', response);
+
+      if (response.success && response.data) {
+        const { user: newUser, access_token } = response.data;
+        handleLoginSuccess(newUser, access_token);
+        return { success: true, data: response.data };
+      }
+      throw new Error(response.message || 'Registration failed');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+      console.error('Registration error:', error);
+      setError(error.message);
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }
@@ -76,40 +108,35 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
+      console.log('Attempting logout');
       await authAPI.logout();
     } catch (error) {
-      console.error('Logout API call failed:', error);
+      console.error('Logout API error:', error);
+    } finally {
+      handleLogout();
     }
-    
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('auth_token');
   };
 
   // Update profile function
   const updateProfile = async (profileData) => {
+    setLoading(true);
     setError(null);
     try {
+      console.log('Updating profile with:', profileData);
       const response = await authAPI.updateProfile(profileData);
-      setUser(response.data);
-      return { success: true, data: response.data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Profile update failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    }
-  };
+      console.log('Profile update response:', response);
 
-  // Change password function
-  const changePassword = async (currentPassword, newPassword, confirmPassword) => {
-    setError(null);
-    try {
-      const response = await authAPI.changePassword(currentPassword, newPassword, confirmPassword);
-      return { success: true, message: response.message };
+      if (response.success) {
+        setUser(response.data);
+        return { success: true, data: response.data };
+      }
+      throw new Error(response.message || 'Profile update failed');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Password change failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+      console.error('Profile update error:', error);
+      setError(error.message);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,12 +145,11 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     error,
+    isAuthenticated,
     login,
     register,
     logout,
     updateProfile,
-    changePassword,
-    isAuthenticated: !!user,
     clearError: () => setError(null)
   };
 
@@ -134,7 +160,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

@@ -7,7 +7,7 @@ import { useAuth } from './contexts/AuthContext';
 export default function Login() {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    mot_de_passe: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   
@@ -28,7 +28,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(formData.email, formData.password);
+    const result = await login(formData.email, formData.mot_de_passe);
     
     if (result.success) {
       console.log('Login successful');
@@ -85,12 +85,12 @@ export default function Login() {
             <div className="mb-10">
               <div className="relative">
                 <input
-                  id="password"
-                  name="password"
+                  id="mot_de_passe"
+                  name="mot_de_passe"
                   type={showPassword ? 'text' : 'password'}
                   required
                   placeholder="Enter your password"
-                  value={formData.password}
+                  value={formData.mot_de_passe}
                   onChange={handleChange}
                   className="w-full px-6 py-4 text-lg bg-transparent border-b-2 border-[#595ACC] focus:outline-none focus:border-[#4A4AB8] text-[#595ACC] placeholder-[#595ACC] font-medium"
                   disabled={loading}

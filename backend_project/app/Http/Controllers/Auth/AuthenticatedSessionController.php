@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Register a new user
      */
-      public function register(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'matricule' => 'required|string|unique:users',
@@ -44,11 +45,9 @@ class AuthenticatedSessionController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $user,
+                'user' => $user->toAuthArray(),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'permissions' => $user->permissions,
-                'roles' => $user->role_names,
             ]
         ], 201);
     }
@@ -56,43 +55,43 @@ class AuthenticatedSessionController extends Controller
     /**
      * Login user
      */
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'mot_de_passe' => 'required|string',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
 
-        $user = User::where('email', $request->email)->first();
+public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'mot_de_passe' => 'required|string'
+    ]);
 
-        if (!$user || !Hash::check($request->mot_de_passe, $user->mot_de_passe)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'permissions' => $user->permissions,
-                'roles' => $user->role_names,
-            ]
-        ]);
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user || !Hash::check($request->mot_de_passe, $user->mot_de_passe)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ], 401);
+    }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'data' => [  // Changed from {} to []
+            'user' => $user->toAuthArray(),
+            'token' => $token,
+            'token_type' => 'Bearer'
+        ]
+    ]);
+}
 
     /**
      * Get authenticated user profile with permissions
@@ -102,11 +101,7 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
         return response()->json([
             'success' => true,
-            'data' => [
-                'user' => $user,
-                'permissions' => $user->permissions,
-                'roles' => $user->role_names,
-            ]
+            'data' => $user->toAuthArray()
         ]);
     }
 

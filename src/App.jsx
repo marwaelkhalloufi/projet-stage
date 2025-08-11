@@ -5,6 +5,7 @@ import CreationForm from './CreateAccountForm';
 import ProtectedRoute from './Componnent/ProtectedRoute';
 import Dashboard from './Dashboard/Dashboard';
 import MissionManagement from './MissionManagement';
+import { AuthProvider } from './contexts/AuthContext';
  
 
 function App() {
@@ -13,9 +14,8 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
+           <Route index  element={<Login />} />
           <Route path="/" element={<Layout />}>
-            <Route  element={<Home />} />
-            <Route index  element={<Login />} />
             <Route path="register" element={<CreationForm />} />
             
             {/* Protected Routes */}

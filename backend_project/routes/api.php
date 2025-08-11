@@ -2,7 +2,7 @@
 
 
 
-use App\Http\Controllers\Api\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\UserController;
@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 
 // Public routes
-Route::post('/auth/register', [AuthenticatedSessionController::class, 'register']);
 Route::post('/auth/login', [AuthenticatedSessionController::class, 'login']);
-
+Route::post('/auth/register', [AuthenticatedSessionController::class, 'register']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Auth routes

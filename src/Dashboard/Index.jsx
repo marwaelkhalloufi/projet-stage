@@ -1,4 +1,3 @@
-// Dashboard/Index.jsx
 import { useState } from "react";
 import Dashboard from "./Dashboard";
 import Collaborateurs from "./Collaborateurs";
@@ -6,7 +5,6 @@ import Sidebar from "./Sidebar";
 import TraitementDesFrais from "./TraitementDesFrais";
 import Statistique from "./statistique";
 import Direction from "./Direction";
-
 
 export default function Index() {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -18,24 +16,31 @@ export default function Index() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "dashboard":
-        return <Dashboard onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <Dashboard />;
       case "collaborateurs":
-        return <Collaborateurs onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <Collaborateurs />;
       case "direction":
-        return <Direction onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <Direction />;
       case "frais":
-        return <TraitementDesFrais onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <TraitementDesFrais />;
       case "statistique":
-        return <Statistique onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <Statistique />;
       default:
-        return <Dashboard onNavigate={handleNavigate} currentPage={currentPage} />;
+        return <Dashboard />;
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
-      {renderCurrentPage()}
+      {/* Sidebar - fixed width */}
+      <div className="w-64 flex-shrink-0">
+        <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
+      </div>
+      
+      {/* Main content area - takes remaining space */}
+      <div className="flex-1 overflow-auto p-6">
+        {renderCurrentPage()}
+      </div>
     </div>
   );
 }

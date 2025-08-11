@@ -1,0 +1,8 @@
+
+@import "tailwindcss";
+
+
+.car-marker {
+  background: transparent !important;
+  border: none !important;
+}

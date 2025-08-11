@@ -1,0 +1,92 @@
+.registration-container-v2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #2a2a72; /* Dark blue background */
+  color: white; /* White text for labels */
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.form-title-v2 {
+  background-color: white;
+  color: #2a2a72;
+  padding: 10px 40px; /* Slightly wider padding */
+  border-radius: 25px; /* More rounded corners */
+  margin-bottom: 60px; /* More space below title */
+  font-size: 2em; /* Slightly larger font */
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.registration-form-v2 {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* One column for label, two for input */
+  gap: 25px 30px; /* Vertical and horizontal gap */
+  max-width: 800px; /* Adjust as needed */
+  width: 100%;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.05); /* Very subtle transparent background for form area */
+  border-radius: 10px;
+}
+
+.form-row {
+  display: contents; /* Allows children to be placed directly in the grid */
+}
+
+.form-row label {
+  display: flex; /* Use flexbox for vertical centering */
+  align-items: center; /* Center text vertically */
+  background-color: white; /* White background for label boxes */
+  color: #2a2a72; /* Dark blue text for labels */
+  padding: 12px 20px; /* Padding inside label box */
+  border-radius: 8px; /* Slightly rounded corners for label box */
+  font-size: 1.1em;
+  font-weight: bold;
+  justify-content: flex-start; /* Align text to the left within its box */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for labels */
+}
+
+.form-row input {
+  background-color: white; /* White background for input fields */
+  border: none; /* No border for inputs */
+  border-radius: 8px; /* Rounded corners for inputs */
+  padding: 12px 15px;
+  color: #2a2a72; /* Dark blue text for input content */
+  font-size: 1.1em;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for inputs */
+}
+
+.form-row input::placeholder {
+  color: #888; /* Placeholder text color */
+}
+
+.form-row input:focus {
+  box-shadow: 0 0 0 3px #a0a0ff; /* Light blue ring on focus */
+}
+
+.submit-button-v2 {
+  grid-column: span 2; /* Make the button span both columns */
+  justify-self: center; /* Center the button horizontally */
+  background-color: white;
+  color: #2a2a72;
+  padding: 15px 50px; /* Larger padding for the button */
+  border: none;
+  border-radius: 25px; /* More rounded corners */
+  cursor: pointer;
+  font-size: 1.3em; /* Larger font size */
+  font-weight: bold;
+  margin-top: 60px; /* More space above the button */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for the button */
+}
+
+.submit-button-v2:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-3px); /* Lift effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}

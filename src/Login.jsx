@@ -1,34 +1,37 @@
-// src/Login.jsx
-// Ce fichier contient le composant de la page de connexion.
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Key } from 'lucide-react';
-// Assurez-vous que le chemin './assets/loginlogo.png' est correct.
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Key, Eye, EyeOff } from 'lucide-react';
 import loginlogo from './assets/loginlogo.png';
 import { useAuth } from './contexts/AuthContext';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [loginData, setLoginData] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  
+  const { login, loading, error, isAuthenticated, clearError } = useAuth();
+  const navigate = useNavigate();
 
-  // Gère la soumission du formulaire de connexion.
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+    if (error) clearError();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(''); // Efface les erreurs précédentes
-
-    try {
-      await login(loginData, password); 
-      navigate('/dashboard'); // Navigue vers le tableau de bord principal après une connexion réussie
-    } catch (err) {
-      setError(err.message || 'Identifiants invalides. Veuillez réessayer.');
-    } finally {
-      setIsLoading(false);
+    const result = await login(formData.email, formData.password);
+    
+    if (result.success) {
+      console.log('Login successful');
     }
   };
 
@@ -56,18 +59,24 @@ export default function Login() {
             <div className="mb-8">
               <div className="relative">
                 <input
-                  type="text"
-                  placeholder="Enter your login"
-                  value={loginData}
-                  onChange={(e) => setLoginData(e.target.value)}
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full px-6 py-4 text-lg bg-transparent border-b-2 border-[#595ACC] focus:outline-none focus:border-[#4A4AB8] text-[#595ACC] placeholder-[#595ACC] font-medium"
-                  disabled={isLoading}
+                  disabled={loading}
                 />
                 <img
-                  src="https://placehold.co/24x24/595ACC/FFFFFF?text=L"
-                  alt="Login Icon"
+                  src="https://placehold.co/24x24/595ACC/FFFFFF?text=@"
+                  alt="Email Icon"
                   className="absolute right-4 top-4 w-6 h-6 object-contain"
-                  onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/24x24/595ACC/FFFFFF?text=L" }}
+                  onError={(e) => { 
+                    e.target.onerror = null; 
+                    e.target.src="https://placehold.co/24x24/595ACC/FFFFFF?text=@" 
+                  }}
                 />
               </div>
             </div>
@@ -76,34 +85,43 @@ export default function Login() {
             <div className="mb-10">
               <div className="relative">
                 <input
+                  id="password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
+                  required
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full px-6 py-4 text-lg bg-transparent border-b-2 border-[#595ACC] focus:outline-none focus:border-[#4A4AB8] text-[#595ACC] placeholder-[#595ACC] font-medium"
-                  disabled={isLoading}
+                  disabled={loading}
                 />
-                <Key
-                  className="absolute right-4 top-4 w-6 h-6 text-[#595ACC] cursor-pointer"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                />
+                {showPassword ? (
+                  <EyeOff
+                    className="absolute right-4 top-4 w-6 h-6 text-[#595ACC] cursor-pointer"
+                    onClick={() => setShowPassword(false)}
+                  />
+                ) : (
+                  <Eye
+                    className="absolute right-4 top-4 w-6 h-6 text-[#595ACC] cursor-pointer"
+                    onClick={() => setShowPassword(true)}
+                  />
+                )}
               </div>
             </div>
 
             {/* Bouton de soumission */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full bg-[#595ACC] hover:bg-[#4A4AB8] disabled:bg-gray-400 text-white text-lg font-semibold py-4 px-6 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
             >
-              {isLoading ? 'Connexion en cours...' : 'Se connecter'}
+              {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
           </form>
 
           {/* Bouton "Gestion des Comptes" */}
           <div className="mt-8 flex justify-center">
             <button
-              // Utilise le chemin défini dans App.jsx
               onClick={() => navigate('/gestion-comptes')}
               className="text-[#595ACC] font-medium text-md hover:underline"
             >

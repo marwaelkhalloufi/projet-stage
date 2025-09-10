@@ -6,13 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Direction extends Model
 {
-    protected $table = 'direction';
-    public $timestamps = false;
+    protected $table = 'directions';
+    public $timestamps = true; 
 
     protected $fillable = [
-        'id',
         'sigle',
         'designation',
         'type',
     ];
+
+    // Relationship with Agents
+    public function agents()
+    {
+        return $this->hasMany(Agent::class);
+    }
 }

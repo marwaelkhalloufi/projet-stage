@@ -32,7 +32,7 @@ const fetchUserProfile = useCallback(async () => {
       if (savedToken) {
         try {
           console.log('Checking authentication with token:', savedToken);
-          authAPI.setAuthToken(savedToken); // Set token in API client
+          authAPI.setAuthToken(savedToken); 
           await fetchUserProfile();
         } catch (error) {
           console.error('Auth initialization failed:', error);

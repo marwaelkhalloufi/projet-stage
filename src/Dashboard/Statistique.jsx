@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import {
   BarChart,
@@ -13,7 +11,6 @@ import {
 const formatMonth = (month) => month.substring(0, 3).toLowerCase()
 
 export default function Statistique() {
-  const [activeTab, setActiveTab] = useState("statistique")
   const [missionData, setMissionData] = useState([])
   const [fraisData, setFraisData] = useState([])
   const [dotationData, setDotationData] = useState([])
@@ -25,19 +22,19 @@ export default function Statistique() {
       try {
         setLoading(true)
         setError(null)
-        const res = await fetch("/api/statistics", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-          },
-        })
-        if (!res.ok) throw new Error("Failed to fetch statistics")
-        const data = await res.json()
+        // const res = await fetch("/api/statistics", {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        //   },
+        // })
+        // if (!res.ok) throw new Error("Failed to fetch statistics")
+        // const data = await res.json()
 
         // Example transform if needed, adapt according to your API data structure
         // Ensure each item: { month: string, value: number }
-        setMissionData(data.missions || [])
-        setFraisData(data.frais || [])
-        setDotationData(data.dotation || [])
+        // setMissionData(data.missions || [])
+        // setFraisData(data.frais || [])
+        // setDotationData(data.dotation || [])
       } catch (err) {
         setError(err.message)
       } finally {
@@ -93,31 +90,7 @@ export default function Statistique() {
 
   return (
     <div className="bg-gray-100 w-full min-h-screen">
-      {/* Header Tabs */}
-      <div className="bg-white border-b">
-        <div className="flex">
-          <div
-            className={`px-8 py-4 font-bold cursor-pointer ${
-              activeTab === "espace"
-                ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-700"
-            }`}
-            onClick={() => setActiveTab("espace")}
-          >
-            Espace Équipe
-          </div>
-          <div
-            className={`px-8 py-4 font-bold cursor-pointer ${
-              activeTab === "collaborateurs"
-                ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-700"
-            }`}
-            onClick={() => setActiveTab("collaborateurs")}
-          >
-            Collaborateurs
-          </div>
-        </div>
-      </div>
+   
 
       {/* Main Content */}
       <div className="p-6">

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\FraisMissionController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\StatistiqueController;
@@ -19,39 +21,35 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/check-permission', [AuthenticatedSessionController::class, 'checkPermission']);
     Route::post('/auth/logout', [AuthenticatedSessionController::class, 'logout']);
 
-    Route::get('/statistics', [StatistiqueController::class, 'index']);
-
-    Route::prefix('frais-missions')->group(function () {
-        Route::get('/', [FraisMissionController::class, 'index']);
-        Route::post('/', [FraisMissionController::class, 'store']);
-        Route::get('/{id}', [FraisMissionController::class, 'show']);
-        Route::put('/{id}', [FraisMissionController::class, 'update']);
-        Route::delete('/{id}', [FraisMissionController::class, 'destroy']);
-    });
-
-    // User Management (Admin only)
-    Route::post('/users', [UserController::class, 'store']);
-    Route::get('/users', [UserController::class, 'index']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
-    
-    Route::apiResource('missions', MissionController::class);
-
-
-    // Agent can only view/update their own missions
-    Route::get('/missions/my-missions', [MissionController::class, 'myMissions']);
-
-    // Vehicle Management
-    Route::get('/vehicles', [VehiculeController::class, 'index']);
-    Route::post('/vehicles', [VehiculeController::class, 'store']);
-    Route::put('/vehicles/{id}', [VehiculeController::class, 'update']);
-    Route::delete('/vehicles/{id}', [VehiculeController::class, 'destroy']);
-
-    // Statistics (Direction and above)
+    // Statistics
     Route::get('/statistics', [StatistiqueController::class, 'index']);
     Route::get('/reports', [StatistiqueController::class, 'reports']);
     Route::get('/reports/export', [StatistiqueController::class, 'export']);
+
+    // Frais Missions - consolidated routes
+    Route::apiResource('frais-missions', FraisMissionController::class);
+    Route::get('frais-missions/status/{status}', [FraisMissionController::class, 'getByStatus']);
+
+    // User Management
+    Route::apiResource('users', UserController::class);
+
+    // Agents and Vehicles
+    Route::apiResource('agents', AgentController::class);
+    Route::apiResource('vehicules', VehiculeController::class);
+
+    // Missions
+    Route::prefix('missions')->group(function () {
+        Route::get('/', [MissionController::class, 'index']);
+        Route::post('/', [MissionController::class, 'store']);
+        Route::get('/dropdown-data', [MissionController::class, 'getDropdownData']);
+        Route::get('/search/{id}', [MissionController::class, 'search']);
+        Route::get('/{id}', [MissionController::class, 'show']);
+        Route::put('/{id}', [MissionController::class, 'update']);
+        Route::delete('/{id}', [MissionController::class, 'destroy']);
+    });
+
+    // Directions
+    Route::apiResource('directions', DirectionController::class);
 
     // Role-based routes
     Route::middleware('role:admin')->group(function () {

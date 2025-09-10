@@ -1,23 +1,32 @@
 <?php
 
+// Migration: create_frais_missions_table.php (CORRECTED)
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-return new class extends Migration {
-    public function up(): void {
-        Schema::create('frais_mission', function (Blueprint $table) {
+
+class CreateFraisMissionsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('frais_missions', function (Blueprint $table) {
             $table->id();
-            $table->string('mission_id', 24)->nullable();
-            $table->string('direction', 100)->nullable();
-            $table->string('mois', 20)->nullable();
-            $table->char('annee', 4)->nullable();
-            $table->decimal('carburant', 10, 2)->nullable();
-            $table->decimal('indemnité', 10, 2)->nullable();
-            $table->decimal('total', 10, 2)->nullable();
-            $table->foreign('mission_id')->references('id')->on('mission')->onDelete('cascade');
+            $table->string('type_frais'); // transport, hebergement, repas, etc.
+            $table->decimal('montant', 10, 2);
+            $table->date('date_frais');
+            $table->text('description')->nullable();
+            $table->string('justificatif')->nullable(); // path to receipt/document
+            $table->string('statut')->default('en_attente'); // en_attente, approuve, rejete
+
+            // Correct foreign key reference to 'missions' table (not 'mission')
+            $table->foreignId('mission_id')->constrained('missions')->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
-    public function down(): void {
-        Schema::dropIfExists('frais_mission');
+
+    public function down()
+    {
+        Schema::dropIfExists('frais_missions');
     }
-};
+}

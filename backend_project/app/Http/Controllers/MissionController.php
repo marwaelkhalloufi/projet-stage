@@ -8,25 +8,16 @@ use Illuminate\Http\Request;
 class MissionController extends Controller
 {
     // List missions (already done)
-    public function index(Request $request)
-    {
-        $user = $request->user();
+  public function index()
+{
+    $missions = Mission::with(['agent', 'vehicule'])->get();
 
-        if ($user->can('view-all-data')) {
-            $missions = Mission::with(['agent', 'vehicule'])->get();
-        } elseif ($user->can('view-own-missions')) {
-            $missions = Mission::where('agent_id', $user->id)->with(['agent', 'vehicule'])->get();
-        } elseif ($user->can('read-missions')) {
-            $missions = Mission::with(['agent', 'vehicule'])->get();
-        } else {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $missions
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $missions,
+        'message' => 'Missions retrieved successfully'
+    ]);
+}
 
     // Show a single mission (consult)
     public function show($id)
@@ -41,18 +32,18 @@ class MissionController extends Controller
     // Insert a new mission
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'numero_mission' => 'required|unique:mission,numero_mission',
-            'objet' => 'required|string',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
-            'trajet' => 'required|string',
-            'agent_id' => 'required|exists:users,id',
-            'vehicule_id' => 'required|exists:vehicules,id',
-            'statut' => 'nullable|string',
-            'anomalie' => 'nullable|string',
-        ]);
-
+       // In your MissionController store and update methods
+$validated = $request->validate([
+    'objet' => 'required|string',
+    'date_debut' => 'required|date',
+    'date_fin' => 'required|date|after_or_equal:date_debut',
+    'destination' => 'required|string', // Changed from 'trajet'
+    'agent_id' => 'required|exists:agents,id',
+    'vehicule_id' => 'required|exists:vehicules,id',
+    'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
+    'description' => 'nullable|string', // Added this field
+    'budget_prevu' => 'nullable|numeric|min:0', // Added this field
+]);
         $mission = Mission::create($validated);
 
         return response()->json(['success' => true, 'data' => $mission, 'message' => 'Mission created successfully']);
@@ -66,17 +57,18 @@ class MissionController extends Controller
             return response()->json(['success' => false, 'message' => 'Mission not found'], 404);
         }
 
-        $validated = $request->validate([
-            'numero_mission' => "required|unique:mission,numero_mission,{$id}",
-            'objet' => 'required|string',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
-            'trajet' => 'required|string',
-            'agent_id' => 'required|exists:users,id',
-            'vehicule_id' => 'required|exists:vehicules,id',
-            'statut' => 'nullable|string',
-            'anomalie' => 'nullable|string',
-        ]);
+        // In your MissionController store and update methods
+$validated = $request->validate([
+    'objet' => 'required|string',
+    'date_debut' => 'required|date',
+    'date_fin' => 'required|date|after_or_equal:date_debut',
+    'destination' => 'required|string', // Changed from 'trajet'
+    'agent_id' => 'required|exists:agents,id',
+    'vehicule_id' => 'required|exists:vehicules,id',
+    'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
+    'description' => 'nullable|string', // Added this field
+    'budget_prevu' => 'nullable|numeric|min:0', // Added this field
+]);
 
         $mission->update($validated);
 
@@ -86,7 +78,7 @@ class MissionController extends Controller
     // Delete a mission
     public function destroy($id)
     {
-        $mission = Mission::find($id);
+        $mission = Mission::findOrFail($id);
         if (!$mission) {
             return response()->json(['success' => false, 'message' => 'Mission not found'], 404);
         }

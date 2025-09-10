@@ -1,21 +1,32 @@
 <?php
 
+// Migration: create_trackings_table.php (CORRECTED)
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-return new class extends Migration {
-    public function up(): void {
-        Schema::create('tracking', function (Blueprint $table) {
-            $table->string('id', 24)->primary();
-            $table->string('mission_id', 24);
-            $table->decimal('latitude', 9, 6)->nullable();
-            $table->decimal('longitude', 9, 6)->nullable();
-            $table->string('etat_voiture', 20)->nullable();
-            $table->dateTime('timestamp')->nullable();
-            $table->foreign('mission_id')->references('id')->on('mission')->onDelete('cascade');
+
+class CreateTrackingsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('trackings', function (Blueprint $table) {
+            $table->id();
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
+            $table->timestamp('timestamp');
+            $table->decimal('vitesse', 5, 2)->nullable();
+            $table->integer('kilometrage')->nullable();
+            $table->string('statut')->default('en_cours');
+
+            // Correct foreign key reference to 'missions' table (not 'mission')
+            $table->foreignId('mission_id')->constrained('missions')->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
-    public function down(): void {
-        Schema::dropIfExists('tracking');
+
+    public function down()
+    {
+        Schema::dropIfExists('trackings');
     }
-};
+}

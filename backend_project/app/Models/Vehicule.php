@@ -6,14 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vehicule extends Model
 {
-    protected $table = 'vehicule';
+    protected $table = 'vehicules';
     public $timestamps = false;
 
     protected $fillable = [
-        'id',
-        'matricule',
+        'immatriculation',
+        'marque',
+        'modele',
         'type',
         'disponible',
-        'etat',
+        'etat'
     ];
+
+    public function missions()
+    {
+        return $this->hasMany(Mission::class);
+    }
+
+    public function scopeAvailable($query)
+    {
+        return $query->where('disponible', true);
+    }
 }

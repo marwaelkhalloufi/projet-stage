@@ -1,17 +1,28 @@
 <?php
 
+// Migration 3: create_agents_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-return new class extends Migration {
-    public function up(): void {
+
+class CreateAgentsTable extends Migration
+{
+    public function up()
+    {
         Schema::create('agents', function (Blueprint $table) {
-            $table->string('id', 24)->primary();
-            $table->string('direction_id', 24);
-            $table->foreign('direction_id')->references('id')->on('direction')->onDelete('cascade');
+            $table->id(); // This creates unsignedBigInteger primary key
+            $table->string('matricule')->unique();
+            $table->string('nom_prenom');
+            $table->string('sigle');
+            $table->string('fonction');
+            $table->string('college');
+            $table->foreignId('direction_id')->constrained('directions')->onDelete('cascade');
+            $table->timestamps(); // Optional
         });
     }
-    public function down(): void {
+
+    public function down()
+    {
         Schema::dropIfExists('agents');
     }
-};
+}

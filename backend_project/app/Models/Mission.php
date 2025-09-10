@@ -2,33 +2,45 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Mission extends Model
 {
-    protected $table = 'mission';
-    public $timestamps = false;
+    use HasFactory;
 
     protected $fillable = [
-        'id',
-        'numero_mission',
-        'objet',
+        'titre',
+        'description',
+        'direction',
         'date_debut',
         'date_fin',
-        'trajet',
-        'agent_id',
-        'vehicule_id',
         'statut',
-        'anomalie',
+        'user_id'
     ];
 
-    public function agent()
-{
-    return $this->belongsTo(User::class, 'agent_id');
-}
+    protected $casts = [
+        'date_debut' => 'date',
+        'date_fin' => 'date'
+    ];
 
-public function vehicule()
-{
-    return $this->belongsTo(Vehicule::class, 'vehicule_id');
-}
+    /**
+     * Get the frais for the mission
+     */
+    public function fraisMissions()
+    {
+        return $this->hasMany(FraisMission::class);
+    }
+
+    // Relationship with Agent (singular)
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
+    }
+
+    // Relationship with Vehicule (singular)
+    public function vehicule()
+    {
+        return $this->belongsTo(Vehicule::class);
+    }
 }

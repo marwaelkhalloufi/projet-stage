@@ -58,32 +58,35 @@ export default function TraitementDesFrais() {
             className="bg-blue-600 text-white placeholder-white py-3 px-6 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
 
-          {/* Mois Row */}
-          <div className="bg-blue-600 text-white text-center py-3 rounded-full text-lg font-semibold">Mois</div>
-          <select
-            value={mois}
-            onChange={(e) => setMois(e.target.value)}
-            className="bg-blue-600 text-white py-3 px-6 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-          >
-            <option value="">Sélectionner un mois</option>
-            <option value="Janvier">Janvier</option>
-            <option value="Février">Février</option>
-            {/* Add all months */}
-          </select>
+        {/* Mois Row */}
+<div className="bg-blue-600 text-white text-center py-3 rounded-full text-lg font-semibold">Mois</div>
+<select
+  value={mois}
+  onChange={(e) => setMois(e.target.value)}
+  className="bg-blue-600 text-white py-3 px-6 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+>
+  <option value="">Sélectionner un mois</option>
+  {[
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+  ].map((m, i) => (
+    <option key={i} value={m}>{m}</option>
+  ))}
+</select>
 
-          {/* Année Row */}
-          <div className="bg-blue-600 text-white text-center py-3 rounded-full text-lg font-semibold">Année</div>
-          <select
-            value={annee}
-            onChange={(e) => setAnnee(e.target.value)}
-            className="bg-blue-600 text-white py-3 px-6 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-          >
-            <option value="">Sélectionner une année</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            {/* Add more years */}
-          </select>
-        </div>
+{/* Année Row */}
+<div className="bg-blue-600 text-white text-center py-3 rounded-full text-lg font-semibold">Année</div>
+<select
+  value={annee}
+  onChange={(e) => setAnnee(e.target.value)}
+  className="bg-blue-600 text-white py-3 px-6 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+>
+  <option value="">Sélectionner une année</option>
+  {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+    <option key={year} value={year}>{year}</option>
+  ))}
+</select>
+</div>
 
         <button
           onClick={handleTraitement}

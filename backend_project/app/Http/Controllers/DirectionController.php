@@ -9,16 +9,22 @@ class DirectionController extends Controller
 {
     public function index()
     {
-        return Direction::all();
+        return Direction::with('agents')->get();
     }
 
     public function show($id)
     {
-        return Direction::findOrFail($id);
+        return Direction::with('agents')->findOrFail($id);
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'sigle' => 'required|string|unique:directions,sigle',
+            'designation' => 'required|string',
+            'type' => 'required|string',
+        ]);
+
         $direction = Direction::create($request->all());
         return response()->json($direction, 201);
     }
@@ -26,6 +32,13 @@ class DirectionController extends Controller
     public function update(Request $request, $id)
     {
         $direction = Direction::findOrFail($id);
+
+        $request->validate([
+            'sigle' => 'required|string|unique:directions,sigle,' . $id,
+            'designation' => 'required|string',
+            'type' => 'required|string',
+        ]);
+
         $direction->update($request->all());
         return response()->json($direction);
     }

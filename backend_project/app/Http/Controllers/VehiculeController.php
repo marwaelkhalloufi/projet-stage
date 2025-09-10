@@ -7,32 +7,22 @@ use Illuminate\Http\Request;
 
 class VehiculeController extends Controller
 {
-    public function index()
-    {
-        return Vehicule::all();
-    }
+   public function index()
+{
+    try {
+        $vehicules = Vehicule::all();
 
-    public function show($id)
-    {
-        return Vehicule::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'data' => $vehicules
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la récupération des véhicules',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
-    public function store(Request $request)
-    {
-        $vehicule = Vehicule::create($request->all());
-        return response()->json($vehicule, 201);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $vehicule = Vehicule::findOrFail($id);
-        $vehicule->update($request->all());
-        return response()->json($vehicule);
-    }
-
-    public function destroy($id)
-    {
-        Vehicule::destroy($id);
-        return response()->json(null, 204);
-    }
 }

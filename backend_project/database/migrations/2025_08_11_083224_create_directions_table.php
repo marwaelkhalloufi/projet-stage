@@ -1,18 +1,27 @@
 <?php
+
+// Migration 1: create_directions_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-    public function up(): void {
-        Schema::create('direction', function (Blueprint $table) {
-            $table->string('id', 24)->primary();
-            $table->string('sigle', 10)->nullable();
-            $table->string('designation', 100)->nullable();
-            $table->string('type', 50)->nullable();
+class CreateDirectionsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('directions', function (Blueprint $table) {
+            $table->id(); // This creates unsignedBigInteger primary key
+            $table->string('sigle')->unique();
+            $table->string('designation');
+            $table->string('type');
+            $table->timestamps(); // Optional: add if you want created_at/updated_at
         });
     }
-    public function down(): void {
-        Schema::dropIfExists('direction');
+
+    public function down()
+    {
+        Schema::dropIfExists('directions');
     }
-};
+}
+
+

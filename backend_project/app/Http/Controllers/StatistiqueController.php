@@ -6,30 +6,33 @@ use App\Models\FraisMission;
 use App\Models\Mission;
 use App\Models\Statistique;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StatistiqueController extends Controller
 {
-   public function index()
-{
-    // Example: aggregate missions, frais, dotation by month for the current year
 
+
+
+    public function index()
+{
+    // Fixed mission query
     $missions = Mission::selectRaw("MONTHNAME(created_at) as month, COUNT(*) as value")
                        ->whereYear('created_at', now()->year)
-                       ->groupBy('month')
+                       ->groupBy('month', DB::raw('MONTH(created_at)'))
                        ->orderByRaw('MONTH(created_at)')
                        ->get();
 
-    $frais = FraisMission::selectRaw("MONTHNAME(created_at) as month, SUM(total) as value")
+    // Fixed frais query
+    $frais = FraisMission::selectRaw("MONTHNAME(created_at) as month, SUM(montant) as value")
                          ->whereYear('created_at', now()->year)
-                         ->groupBy('month')
+                         ->groupBy('month', DB::raw('MONTH(created_at)'))
                          ->orderByRaw('MONTH(created_at)')
                          ->get();
 
-
     return response()->json([
+        'success' => true,
         'missions' => $missions,
         'frais' => $frais,
-
     ]);
 }
 

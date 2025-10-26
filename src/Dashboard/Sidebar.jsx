@@ -1,9 +1,9 @@
-import { Users, BarChart3, MapPin, CreditCard, TrendingUp, LogOut } from "lucide-react";
+import { Users, BarChart3, MapPin, CreditCard, TrendingUp, Map, LogOut } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-  const { user, logout } = useAuth(); // <-- Added logout here
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const menuItems = [
@@ -12,6 +12,7 @@ export default function Sidebar() {
     { id: "direction", label: "Direction", icon: MapPin, to: "/dashboard/direction" },
     { id: "frais", label: "Frais", icon: CreditCard, to: "/dashboard/traitementDesFrais" },
     { id: "statistique", label: "Statistique", icon: TrendingUp, to: "/dashboard/statistique" },
+    { id: "map", label: "Carte", icon: Map, to: "/dashboard/map" },
   ];
 
   return (

@@ -19,7 +19,12 @@ class ConsultationController extends Controller
 
     public function store(Request $request)
     {
-        $consultation = Consultation::create($request->all());
+        $validated = $request->validate([
+    'username' => 'required|string|max:255',
+    'email' => 'required|email',
+    'profil' => 'required|string'
+]);
+$consultation = Consultation::create($validated);
         return response()->json($consultation, 201);
     }
 

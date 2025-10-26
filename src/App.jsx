@@ -10,6 +10,7 @@ import Collaborateurs from './Dashboard/Collaborateurs';
 import Direction from './Dashboard/Direction';
 import TraitementDesFrais from './Dashboard/TraitementDesFrais';
 import Statistique from './Dashboard/Statistique';
+import Map from './Dashboard/Map';
  
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
               <Route path="direction" element={<Direction />} />
               <Route path="traitementDesFrais" element={<TraitementDesFrais />} />
               <Route path="statistique" element={<Statistique />} />
+                          <Route path="map" element={<Map />} /> 
+
             </Route>
                 
            <Route path="missions" element={<MissionManagement />} />

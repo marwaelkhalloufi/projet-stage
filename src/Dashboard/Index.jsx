@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import TraitementDesFrais from "./TraitementDesFrais";
 import Statistique from "./statistique";
 import Direction from "./Direction";
+import Map from "./Map";
 
 export default function Index() {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -25,6 +26,8 @@ export default function Index() {
         return <TraitementDesFrais />;
       case "statistique":
         return <Statistique />;
+      case "map":
+        return <Map />;
       default:
         return <Dashboard />;
     }
@@ -38,7 +41,7 @@ export default function Index() {
       </div>
       
       {/* Main content area - takes remaining space */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto">
         {renderCurrentPage()}
       </div>
     </div>

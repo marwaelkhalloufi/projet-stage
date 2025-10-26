@@ -8,16 +8,16 @@ use Illuminate\Http\Request;
 class MissionController extends Controller
 {
     // List missions (already done)
-  public function index()
-{
-    $missions = Mission::with(['agent', 'vehicule'])->get();
+    public function index()
+    {
+        $missions = Mission::with(['agent', 'vehicule'])->get();
 
-    return response()->json([
-        'success' => true,
-        'data' => $missions,
-        'message' => 'Missions retrieved successfully'
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'data' => $missions,
+            'message' => 'Missions retrieved successfully'
+        ]);
+    }
 
     // Show a single mission (consult)
     public function show($id)
@@ -32,18 +32,21 @@ class MissionController extends Controller
     // Insert a new mission
     public function store(Request $request)
     {
-       // In your MissionController store and update methods
-$validated = $request->validate([
-    'objet' => 'required|string',
-    'date_debut' => 'required|date',
-    'date_fin' => 'required|date|after_or_equal:date_debut',
-    'destination' => 'required|string', // Changed from 'trajet'
-    'agent_id' => 'required|exists:agents,id',
-    'vehicule_id' => 'required|exists:vehicules,id',
-    'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
-    'description' => 'nullable|string', // Added this field
-    'budget_prevu' => 'nullable|numeric|min:0', // Added this field
-]);
+        $validated = $request->validate([
+            'objet' => 'required|string',
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'destination' => 'required|string',
+            'agent_id' => 'required|exists:agents,id',
+            'vehicule_id' => 'required|exists:vehicules,id',
+            'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
+            'description' => 'nullable|string',
+            'budget_prevu' => 'nullable|numeric|min:0',
+            'titre' => 'nullable|string',         // ADDED
+            'direction' => 'nullable|string',     // ADDED - your original field
+            'user_id' => 'nullable|exists:users,id', // ADDED
+        ]);
+
         $mission = Mission::create($validated);
 
         return response()->json(['success' => true, 'data' => $mission, 'message' => 'Mission created successfully']);
@@ -57,18 +60,20 @@ $validated = $request->validate([
             return response()->json(['success' => false, 'message' => 'Mission not found'], 404);
         }
 
-        // In your MissionController store and update methods
-$validated = $request->validate([
-    'objet' => 'required|string',
-    'date_debut' => 'required|date',
-    'date_fin' => 'required|date|after_or_equal:date_debut',
-    'destination' => 'required|string', // Changed from 'trajet'
-    'agent_id' => 'required|exists:agents,id',
-    'vehicule_id' => 'required|exists:vehicules,id',
-    'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
-    'description' => 'nullable|string', // Added this field
-    'budget_prevu' => 'nullable|numeric|min:0', // Added this field
-]);
+        $validated = $request->validate([
+            'objet' => 'required|string',
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'destination' => 'required|string',
+            'agent_id' => 'required|exists:agents,id',
+            'vehicule_id' => 'required|exists:vehicules,id',
+            'statut' => 'nullable|string|in:planifie,en_cours,termine,annule',
+            'description' => 'nullable|string',
+            'budget_prevu' => 'nullable|numeric|min:0',
+            'titre' => 'nullable|string',         // ADDED
+            'direction' => 'nullable|string',     // ADDED - your original field
+            'user_id' => 'nullable|exists:users,id', // ADDED
+        ]);
 
         $mission->update($validated);
 
@@ -99,5 +104,79 @@ $validated = $request->validate([
             'message' => 'Mission validated successfully',
             'data' => $mission
         ]);
+    }
+
+    // ============ NEW METHODS FOR MAP FUNCTIONALITY ============
+
+    /**
+     * Get active missions (for map display)
+     */
+    public function getActiveMissions()
+    {
+        try {
+            $missions = Mission::whereIn('statut', ['planifie', 'en_cours'])
+                ->with(['agent', 'vehicule', 'tracking' => function($query) {
+                    $query->latest('timestamp');
+                }])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $missions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching active missions'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get missions by status
+     */
+    public function getByStatus($status)
+    {
+        try {
+            $missions = Mission::where('statut', $status)
+                ->with(['agent', 'vehicule'])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $missions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching missions'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get missions with tracking data
+     */
+    public function getMissionsWithTracking()
+    {
+        try {
+            $missions = Mission::with([
+                'agent',
+                'vehicule',
+                'tracking' => function($query) {
+                    $query->orderBy('timestamp', 'desc');
+                }
+            ])->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $missions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching missions with tracking'
+            ], 500);
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\FraisMissionController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\StatistiqueController;
+use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehiculeController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Agents and Vehicles
     Route::apiResource('agents', AgentController::class);
+
+    // IMPORTANT: Put specific routes BEFORE apiResource
+    Route::get('vehicules/map-data', [VehiculeController::class, 'getMapData']); // NEW - for map
     Route::apiResource('vehicules', VehiculeController::class);
 
     // Missions
@@ -47,6 +51,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [MissionController::class, 'update']);
         Route::delete('/{id}', [MissionController::class, 'destroy']);
     });
+
+    // Tracking routes
+    Route::get('/tracking', [TrackingController::class, 'index']);
+    Route::get('/tracking/latest', [TrackingController::class, 'getLatestTracking']);
+    Route::get('/tracking/{id}', [TrackingController::class, 'show']);
+    Route::get('/tracking/mission/{missionId}', [TrackingController::class, 'getByMission']);
+    Route::post('/tracking', [TrackingController::class, 'store']);
+    Route::put('/tracking/{id}', [TrackingController::class, 'update']);
+    Route::delete('/tracking/{id}', [TrackingController::class, 'destroy']);
 
     // Directions
     Route::apiResource('directions', DirectionController::class);
